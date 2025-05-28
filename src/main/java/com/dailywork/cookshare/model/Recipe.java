@@ -1,17 +1,20 @@
 package com.dailywork.cookshare.model;
 
-
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.mapping.List;
+import org.springframework.context.annotation.EnableMBeanExport;
 
+import java.util.List;
+
+@Entity
 @Getter
 @Setter
 public class Recipe {
 
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String title;
     private String instruction;
@@ -20,23 +23,26 @@ public class Recipe {
     private String category;
     private String description;
     private String cuisine;
-    private String ingredients;
+
 
     private int likeCount;
     private double averageRating;
     private int totalRateCount;
 
+    @ElementCollection
+    @CollectionTable(name = "recipe_ingredients", joinColumns = @joinColumn(name ="recipe_id"))
+    @Column(name = "ingredient")
     private List<String> ingredients;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany
-    private Review review;
+    @OneToMany (mappedBy = "recipe")
 
-    @OneToOne
+    private List<Review> reviews;
+
+    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL)
     private Image image;
-
-
 
 }
